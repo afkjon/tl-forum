@@ -47,11 +47,12 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
+    /**
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
-    /**
+    
      * ...add more providers here.
      *
      * Most other providers require a bit more work than the Discord provider. For example, the
