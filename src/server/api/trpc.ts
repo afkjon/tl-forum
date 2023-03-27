@@ -47,9 +47,9 @@ type CreateContextOptions = {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
+export const createTRPCContext = (opts: CreateNextContextOptions) => {
   const { req } = opts;
-  const sesh = getAuth(req);
+  const sesh =  getAuth(req);
   
   const userId = sesh.userId;
 
