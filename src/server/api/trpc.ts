@@ -16,8 +16,6 @@
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
-
-import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
 
 type CreateContextOptions = {
@@ -50,13 +48,14 @@ type CreateContextOptions = {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
-
-  const sesh = getAuth(req)
+  const { req } = opts;
+  const sesh = getAuth(req);
   
+  const userId = sesh.userId;
+
   return {
     prisma,
-    session: sesh,
+    userId,
   };
 };
 
@@ -111,13 +110,16 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+  if (!ctx.userId) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED"
+    });
   }
+
   return next({
     ctx: {
       // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      userId: ctx.userId,
     },
   });
 }); 

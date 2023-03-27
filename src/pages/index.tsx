@@ -8,10 +8,22 @@ import { LoadingSpinner } from "~/components/loading";
 import { api, RouterOutputs } from "~/utils/api";
 import { useState } from "react";
 
+import relativeTime from "dayjs/plugin/relativeTime";
+import dayjs from "dayjs";
+import Link from "next/link";
+dayjs.extend(relativeTime);
+
 const CreatePostWizard = () => {
   const { user } = useUser();
   const [input, setInput] = useState("");
-  const { mutate } = api.posts.create.useMutation();
+  const ctx = api.useContext();
+
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      ctx.posts.getAll.invalidate();
+    }
+  });
 
   if (!user) return null;
 
@@ -29,6 +41,12 @@ const CreatePostWizard = () => {
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            mutate({ content: input })
+          }
+        }}
+        disabled={isPosting}
       />
       <button onClick={() => mutate({ content: input })}>Post</button>
     </div >
@@ -53,6 +71,11 @@ const PostView = (props: PostWithUser) => {
         <div className="flex text-slate-100">
           <span>{`@${author.username!}`}</span>
         </div>
+        <Link href={`/post/${post.id}`}>
+          <span className="font-thin">{` ${dayjs(
+            post.createdAt
+          ).fromNow()}`}</span>
+        </Link>
         <span>{post.content}</span>
       </div>
     </div>
@@ -73,7 +96,7 @@ const Feed = () => {
 
   return (
     <div className="flex flex-col">
-      {data?.map((fullPost) => (
+      {data.map((fullPost) => (
         <PostView {...fullPost} key={fullPost.post.id} />
       ))}
     </div>
