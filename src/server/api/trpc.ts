@@ -15,12 +15,7 @@
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { type Session } from "next-auth";
 import { prisma } from "~/server/db";
-
-type CreateContextOptions = {
-  session: Session | null;
-};
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use it, you can export

@@ -5,14 +5,12 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 
 import { LoadingSpinner } from "~/components/loading";
 
-import { api, RouterOutputs } from "~/utils/api";
+import { api } from "~/utils/api";
 import { useState } from "react";
 
-import relativeTime from "dayjs/plugin/relativeTime";
-import dayjs from "dayjs";
-import Link from "next/link";
+
 import toast from "react-hot-toast";
-dayjs.extend(relativeTime);
+import { PostView } from "~/components/postview";
 
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -22,7 +20,7 @@ const CreatePostWizard = () => {
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
     onSuccess: () => {
       setInput("");
-      ctx.posts.getAll.invalidate();
+      void ctx.posts.getAll.invalidate();
     },
     onError: (err) => {
       const errorMessage = err.data?.zodError?.fieldErrors.content;
@@ -67,34 +65,6 @@ const CreatePostWizard = () => {
   )
 }
 
-type PostWithUser = RouterOutputs["posts"]["getAll"][number];
-
-const PostView = (props: PostWithUser) => {
-  const { post, author } = props;
-
-  return (
-    <div className="border-b border-slate-400 p-4" key={post.id}>
-      <Image
-        src={author.profileImageUrl}
-        alt="Profile image"
-        className="h-16 w-16 rounded-full gap-3"
-        width={56}
-        height={56}
-      />
-      <div className="flex flex-col">
-        <div className="flex text-slate-100">
-          <span>{`@${author.username!}`}</span>
-        </div>
-        <Link href={`/post/${post.id}`}>
-          <span className="font-thin">{` ${dayjs(
-            post.createdAt
-          ).fromNow()}`}</span>
-        </Link>
-        <span>{post.content}</span>
-      </div>
-    </div>
-  );
-}
 
 const Feed = () => {
   const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
