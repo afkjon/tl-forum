@@ -8,7 +8,7 @@ import { LoadingSpinner } from "~/components/loading";
 import { api } from "~/utils/api";
 
 import { PostView } from "~/components/postview";
-import { CreatePostWizard } from "~/components/createpostwizard";
+import { CreatePostWizard } from "~/components/CreatePostWizard";
 
 const Feed = () => {
   const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
