@@ -25,7 +25,7 @@ export const PostView = (props: PostWithUser) => {
       }
     },
   });
-  
+
   const onUpVoteButton = () => {
     vote({ id: post.id, increment: 1 });
   }
@@ -35,7 +35,7 @@ export const PostView = (props: PostWithUser) => {
   }
 
   return (
-    <div className="border-b border-slate-400 p-4" key={post.id}>
+    <div className="border-b border-slate-400 p-4 bg-slate-800" key={post.id}>
       <Image
         src={author.profileImageUrl}
         alt={`@${author.username}'s Profile image`}
@@ -44,21 +44,28 @@ export const PostView = (props: PostWithUser) => {
         height={56}
       />
       <div className="flex flex-col">
+        <div className="flex justify-start">
+          <button className="font-bold" onClick={onDownVoteButton}>-</button>
+          <span className="flex text-red-300 font-bold underline p-2">{post.karma}</span>
+          <button className="font-bold" onClick={onUpVoteButton}>+</button>
+        </div>
+        <h2>{post.title}</h2>
         <div className="flex text-slate-100 ga-1">
-          <Link href={`/${author.username}`}>
-            <span>{`@${author.username} `}</span>
-          </Link>
+          <span>
+            Submitted by {` @`}
+            <Link
+              className="underline"
+              href={`/${author.username}`}>
+              {`${author.username}`}
+            </Link>
+          </span>
         </div>
         <Link href={`/post/${post.id}`} className="underline">
           <span className="font-thin">{` ${dayjs(
             post.createdAt
           ).fromNow()}`}</span>
         </Link>
-        <div className="flex justify-end">
-          <button className="font-bold" onClick={onDownVoteButton}>-</button>
-          <span className="flex justify-end text-red-300 font-bold underline p-2">{post.karma}</span>
-          <button className="font-bold" onClick={onUpVoteButton}>+</button>
-        </div>
+
         <span>{post.content}</span>
       </div>
     </div>

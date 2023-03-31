@@ -49,7 +49,7 @@ export const CreatePostWizard = () => {
         disabled={isPosting}
       />
       <input
-        placeholder="Post"
+        placeholder="Create Post"
         className="bg-transparent text-white grow outline-none"
         type="text"
         value={content}

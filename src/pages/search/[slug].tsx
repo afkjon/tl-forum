@@ -7,10 +7,38 @@ import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import superjson from "superjson";
-import { Feed } from "~/components/feed";
+import { FunctionComponent } from "react";
+import { api } from "~/utils/api";
+import { LoadingPage } from "../[slug]";
+import { PostView } from "~/components/postview";
+
+type SearchResultsProps = {
+  query: string;
+}
+
+export const SearchResults: FunctionComponent<SearchResultsProps> = ({ query }: SearchResultsProps) => {
+  const { data, isLoading: postsLoading } = api.posts.search.useQuery({ query });
+
+  if (postsLoading)
+    return (
+      <div className="flex grow mt-48">
+        <LoadingPage />
+      </div>
+    );
+
+  if (!data) return <div>No Results</div>;
+
+  return (
+    <div className="flex flex-col">
+      {data.map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id} />
+      ))}
+    </div>
+  )
+}
 
 
-const CategoryPage: NextPage<{ category: string }> = ({ category }) => {
+const SearchPage: NextPage<{ query: string }> = ({ query }) => {
   const { isLoaded: userLoaded, isSignedIn } = useUser();
 
   if (!userLoaded) return <div />;
@@ -33,7 +61,7 @@ const CategoryPage: NextPage<{ category: string }> = ({ category }) => {
             {isSignedIn && <CreatePostWizard />}
             {isSignedIn && <SignOutButton />}
           </div>
-          <Feed category={category}></Feed>
+          <SearchResults query={query}></SearchResults>
         </div>
       </main>
     </>
@@ -56,7 +84,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   return {
     props: {
       trpcState: ssg.dehydrate(),
-      category: slug,
+      query: slug,
     }
   };
 }
@@ -68,4 +96,4 @@ export const getStaticPaths = async () => {
   };
 };
 
-export default CategoryPage;
+export default SearchPage;

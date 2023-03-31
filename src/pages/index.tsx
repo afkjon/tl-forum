@@ -1,9 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import { CreatePostWizard } from "~/components/CreatePostWizard";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import { Feed } from "~/components/feed";
-import { PageLayout } from "~/components/layout";
 
 const Home: NextPage = () => {
   const postFeedCategory = "Unorganized";
@@ -20,16 +18,8 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex min-h-screen justify-center bg-gradient-to-b from-[#1c0433] to-[#15162c]">
-        <div className="h-full w-full border-x border-slate-400 md:max-w-2xl mt-20">
-          <div className="flex border-b border-slate-400 p-4">
-            {!isSignedIn && (
-              <div>
-                <SignInButton />
-              </div>
-            )}
-            {isSignedIn && <CreatePostWizard />}
-            {isSignedIn && <SignOutButton />}
-          </div>
+        <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
+          
           <Feed category={postFeedCategory} />
         </div>
       </div>
