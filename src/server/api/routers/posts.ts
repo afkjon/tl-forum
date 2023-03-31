@@ -1,21 +1,14 @@
-import type { User } from "@clerk/nextjs/dist/api";
 import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { filterUserforClient } from "~/server/helpers/filterUserForClient";
+
 
 import {
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-
-const filterUserforClient = (user: User) => {
-  return {
-    id: user.id,
-    username: user.username,
-    profileImageUrl: user.profileImageUrl
-  }
-}
 
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
@@ -64,6 +57,7 @@ export const postsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
+        title: z.string().min(1).max(280),
         content: z.string().min(1).max(280),
       })
     )
@@ -81,11 +75,45 @@ export const postsRouter = createTRPCRouter({
 
       const post = await ctx.prisma.post.create({
         data: {
+          title: input.title,
           authorId,
           content: input.content,
+          categoryId: "clfvrpvp40000ve405mpzckrd",
         },
       });
       
       return post;
     }),
+
+  vote: protectedProcedure
+  .input(
+    z.object({
+      id: z.string().min(1).max(280),
+      increment: z.number().min(-1).max(1),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const authorId = ctx.userId;
+    const { success } = await rateLimit.limit(authorId);
+
+    if (!success) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "You are voting too fast",
+      });
+    }
+
+    const post = await ctx.prisma.post.update({
+      where: {
+        id: input.id,
+      },
+      data: {
+        karma: {
+          increment: input.increment,
+        },
+      },
+    });
+    
+    return post;
+  }),
 });
