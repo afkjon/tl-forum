@@ -53,7 +53,50 @@ export const postsRouter = createTRPCRouter({
       };
     });
   }),
+  getByCategory: publicProcedure
+    .input(
+      z.object({
+        name: z.string().min(1).max(280),
+      })
+    ).query(async ({ ctx, input }) => {
+      const category = await ctx.prisma.category.findUnique({
+        where: {
+          name: input.name,
+        },
+      });
+      const posts = await ctx.prisma.post.findMany({
+        where: {
+          categoryId: category?.id,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
 
+      const users = (
+        await clerkClient.users.getUserList({
+          userId: posts.map((post) => post.authorId),
+          limit: 100,
+        })
+      ).map(filterUserforClient);
+
+      return posts.map((post) => {
+        const author = users.find(user => user.id === post.authorId);
+        if (!author) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Could not find author for post ${post.id}`,
+          });
+        }
+        return {
+          post,
+          author: {
+            ...author,
+            username: author.username,
+          }
+        };
+      });
+    }),
   create: protectedProcedure
     .input(
       z.object({
@@ -81,39 +124,39 @@ export const postsRouter = createTRPCRouter({
           categoryId: "clfvrpvp40000ve405mpzckrd",
         },
       });
-      
+
       return post;
     }),
 
   vote: protectedProcedure
-  .input(
-    z.object({
-      id: z.string().min(1).max(280),
-      increment: z.number().min(-1).max(1),
-    })
-  )
-  .mutation(async ({ ctx, input }) => {
-    const authorId = ctx.userId;
-    const { success } = await rateLimit.limit(authorId);
+    .input(
+      z.object({
+        id: z.string().min(1).max(280),
+        increment: z.number().min(-1).max(1),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const authorId = ctx.userId;
+      const { success } = await rateLimit.limit(authorId);
 
-    if (!success) {
-      throw new TRPCError({
-        code: "TOO_MANY_REQUESTS",
-        message: "You are voting too fast",
-      });
-    }
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "You are voting too fast",
+        });
+      }
 
-    const post = await ctx.prisma.post.update({
-      where: {
-        id: input.id,
-      },
-      data: {
-        karma: {
-          increment: input.increment,
+      const post = await ctx.prisma.post.update({
+        where: {
+          id: input.id,
         },
-      },
-    });
-    
-    return post;
-  }),
+        data: {
+          karma: {
+            increment: input.increment,
+          },
+        },
+      });
+
+      return post;
+    }),
 });
