@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 
-export const Custom404 : NextPage = () => {
+const Custom404 : NextPage = () => {
   return (
     <>
       <Head>
@@ -17,3 +17,5 @@ export const Custom404 : NextPage = () => {
     </>
   );
 }
+
+export default Custom404;

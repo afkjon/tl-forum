@@ -2,8 +2,10 @@ import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { api } from "~/utils/api";
+import { useRouter } from "next/router";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
+  const router = useRouter();
   const { data } = api.profile.getUserByUsername.useQuery({
     username,
   });
@@ -12,7 +14,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     username,
   });
 
-  if (!data || !posts) return <Custom404 />;
+  if (!data || !posts)
+    router.push("/404", undefined, { shallow: true });
 
   return (
     <>
@@ -62,7 +65,6 @@ import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import superjson from "superjson";
 import { PostView } from "~/components/postview";
-import { Custom404 } from "./404";
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = createProxySSGHelpers({
