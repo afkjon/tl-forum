@@ -178,7 +178,8 @@ export const commentsRouter = createTRPCRouter({
   vote: protectedProcedure
     .input(
       z.object({
-        id: z.string().min(1).max(280),
+        userId: z.string().min(1).max(280),
+        commentId: z.string().min(1).max(280),
         increment: z.number().min(-1).max(1),
       })
     )
@@ -192,18 +193,62 @@ export const commentsRouter = createTRPCRouter({
           message: "You are voting too fast",
         });
       }
-
-      const comment = await ctx.prisma.comment.update({
+      
+      const userVote = await ctx.prisma.commentVote.findFirst({
         where: {
-          id: input.id,
-        },
-        data: {
-          karma: {
-            increment: input.increment,
-          },
+          commentId: input.commentId,
+          userId: input.userId
         },
       });
 
-      return comment;
+      if (userVote) {
+        // Do nothing if the user is voting the same way
+        if (userVote.increment === input.increment) {
+          return;
+        }
+        const comment = await ctx.prisma.comment.update({
+          where: {
+            id: input.commentId,
+          },
+          data: {
+            karma: {
+              increment: input.increment * 2,
+            },
+          },
+        });
+
+        const vote = await ctx.prisma.commentVote.update({
+          where: {
+            id: userVote.id,
+          },
+          data: {
+            increment: input.increment,
+          }
+        });
+
+        return comment;
+
+      } else {
+        const comment = await ctx.prisma.comment.update({
+          where: {
+            id: input.commentId,
+          },
+          data: {
+            karma: {
+              increment: input.increment,
+            },
+          },
+        });
+
+        const vote = await ctx.prisma.commentVote.create({
+          data: {
+            commentId: input.commentId,
+            userId: input.userId,
+            increment: input.increment,
+          },
+        });
+
+        return comment;
+      }
     }),
 });

@@ -7,18 +7,24 @@ import Link from 'next/link';
 import relativeTime from "dayjs/plugin/relativeTime";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
+
+import { useUser } from "@clerk/nextjs";
+
 dayjs.extend(relativeTime);
 
 type CommentWithUser = RouterOutputs["comments"]["getCommentsForPostId"][number];
 
 export const CommentView = (props: CommentWithUser) => {
+  const { user } = useUser();
   const { comment, author } = props;
   const [points, setPoints] = useState(props.comment.karma);
 
   const { mutate: vote, isLoading: isVoting } = api.comments.vote.useMutation({
     onSuccess: (c) => {
-      toast.success("Voted!");
-      setPoints(c.karma)
+      if (c) {
+        toast.success("Voted!");
+        setPoints(c.karma)
+      }
     },
     onError: (err) => {
       const errorMessage = err.data?.zodError?.fieldErrors.content;
@@ -31,11 +37,16 @@ export const CommentView = (props: CommentWithUser) => {
   });
 
   const onUpVoteButton = () => {
-    vote({ id: comment.id, increment: 1 })
+    if (!user) return;
+    if (user?.id === author.id) return toast.error("You can't vote on your own comment!");
+
+    vote({ userId: user?.id, commentId: comment.id, increment: 1 })
   }
 
   const onDownVoteButton = () => {
-    vote({ id: comment.id, increment: -1 });
+    if (!user) return;
+    if (user?.id === author.id) return toast.error("You can't vote on your own comment!");
+    vote({ userId: user?.id, commentId: comment.id, increment: -1 })
   }
 
   return (

@@ -54,48 +54,48 @@ export const postsRouter = createTRPCRouter({
     });
   }),
   get: publicProcedure
-  .input(
-    z.object({
-      id: z.string().min(1).max(280),
-    })
-  )
-  .query(async ({ ctx, input }) => {
-    const post = await ctx.prisma.post.findUnique({
-      where: {
-        id: input.id,
-      },
-    });
-
-    if (!post) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: `Could not find post for id ${input.id}`,
-      });
-    }
-
-    const users = (
-      await clerkClient.users.getUserList({
-        userId: [post.authorId]
+    .input(
+      z.object({
+        id: z.string().min(1).max(280),
       })
-    ).map(filterUserforClient);
-
-    const author = users[0];
-
-    if (!author) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: `Could not find author for post ${post.id}`,
+    )
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findUnique({
+        where: {
+          id: input.id,
+        },
       });
-    }
 
-    return {
-      post,
-      author: {
-        ...author,
-        username: author.username,
+      if (!post) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Could not find post for id ${input.id}`,
+        });
       }
-    };
-  }),
+
+      const users = (
+        await clerkClient.users.getUserList({
+          userId: [post.authorId]
+        })
+      ).map(filterUserforClient);
+
+      const author = users[0];
+
+      if (!author) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Could not find author for post ${post.id}`,
+        });
+      }
+
+      return {
+        post,
+        author: {
+          ...author,
+          username: author.username,
+        }
+      };
+    }),
   getByCategory: publicProcedure
     .input(
       z.object({
@@ -224,7 +224,8 @@ export const postsRouter = createTRPCRouter({
   vote: protectedProcedure
     .input(
       z.object({
-        id: z.string().min(1).max(280),
+        postId: z.string().min(1).max(280),
+        userId: z.string().min(1).max(280),
         increment: z.number().min(-1).max(1),
       })
     )
@@ -235,21 +236,65 @@ export const postsRouter = createTRPCRouter({
       if (!success) {
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
-          message: "You are voting too fast",
+          message: "You are voting too often",
         });
       }
 
-      const post = await ctx.prisma.post.update({
+      const userVote = await ctx.prisma.postVote.findFirst({
         where: {
-          id: input.id,
-        },
-        data: {
-          karma: {
-            increment: input.increment,
-          },
+          postId: input.postId,
+          userId: input.userId
         },
       });
 
-      return post;
+      if (userVote) {
+        // Do nothing if the user is voting the same way
+        if (userVote.increment === input.increment) {
+          return;
+        }
+        const post = await ctx.prisma.post.update({
+          where: {
+            id: input.postId,
+          },
+          data: {
+            karma: {
+              increment: input.increment * 2,
+            },
+          },
+        });
+
+        const vote = await ctx.prisma.postVote.update({
+          where: {
+            id: userVote.id,
+          },
+          data: {
+            increment: input.increment,
+          }
+        });
+
+        return post;
+
+      } else {
+        const post = await ctx.prisma.post.update({
+          where: {
+            id: input.postId,
+          },
+          data: {
+            karma: {
+              increment: input.increment,
+            },
+          },
+        });
+
+        const vote = await ctx.prisma.postVote.create({
+          data: {
+            postId: input.postId,
+            userId: input.userId,
+            increment: input.increment,
+          },
+        });
+
+        return post;
+      }
     }),
 });

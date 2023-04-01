@@ -2,31 +2,32 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-  relationMode = "prisma"
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 model Category {
-    id          String   @id @default(cuid())
-    name        String   @unique
-    posts       Post[]
+    id    String @id @default(cuid())
+    name  String @unique
+    posts Post[]
 }
 
 model Post {
-    id          String   @id @default(cuid())
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    title       String   @db.VarChar(255)
-    content     String   @db.VarChar(255)
-    categoryId  String
-    category    Category @relation(fields: [categoryId], references: [id])
-    karma       Int      @default(1)
-    authorId    String
+    id         String   @id @default(cuid())
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    title      String   @db.VarChar(255)
+    content    String   @db.VarChar(255)
+    categoryId String
+    category   Category @relation(fields: [categoryId], references: [id])
+    karma      Int      @default(1)
+    authorId   String
+
     @@index([authorId])
 }
 
@@ -38,7 +39,45 @@ model Comment {
     karma     Int      @default(1)
     authorId  String
     postId    String
+
     @@index([postId])
+}
+
+model ClerkUser {
+    id          String        @id @default(cuid())
+    userId      String        @unique
+    username    String        @unique
+    email       String        @unique
+    name        String?
+    image       String?
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+
+    @@index([userId])
+}
+
+model PostVote {
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    postId    String
+    userId    String
+    increment Int       @default(1)
+
+    @@index([postId])
+    @@index([userId])
+}
+
+model CommentVote {
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    commentId String
+    userId    String
+    increment Int       @default(1)
+
+    @@index([commentId])
+    @@index([userId])
 }
 
 // Necessary for Next auth
