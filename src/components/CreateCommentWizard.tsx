@@ -4,22 +4,24 @@ import { useUser } from "@clerk/nextjs";
 import { LoadingSpinner } from "~/components/loading";
 
 import { api } from "~/utils/api";
-import { useState } from "react";
-
+import { FunctionComponent, useState } from "react";
 
 import toast from "react-hot-toast";
 
-export const CreatePostWizard = () => {
+type CreateCommentWizardProps = {
+  postId: string;
+}
+
+export const CreateCommentWizard: FunctionComponent<CreateCommentWizardProps> = ({ postId }: CreateCommentWizardProps) => {
   const { user } = useUser();
-  const [content, setContent] = useState("");
-  const [title, setTitle] = useState("");
+  const [comment, setComment] = useState("");
   const ctx = api.useContext();
 
-  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+  const { mutate, isLoading: isCommenting } = api.comments.create.useMutation({
     onSuccess: () => {
-      setContent("");
+      setComment("");
       void ctx.posts.getAll.invalidate();
-      toast.success("Post created!");
+      toast.success("Comment posted!");
     },
     onError: (err) => {
       const errorMessage = err.data?.zodError?.fieldErrors.content;
@@ -34,7 +36,7 @@ export const CreatePostWizard = () => {
   if (!user) return null;
 
   return (
-    <div className="flex w-full gap-3">
+    <div className="flex w-full gap-3 p-3 border-slate-400 border-b-2">
       <Image src={user.profileImageUrl}
         alt="Profile image"
         className="h-16 w-16 rounded-full"
@@ -42,32 +44,24 @@ export const CreatePostWizard = () => {
         height={56}
       />
       <input
-        placeholder="Title"
+        placeholder="Write Comment"
         className="bg-transparent text-white grow outline-none"
         type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        disabled={isPosting}
-      />
-      <input
-        placeholder="Create Post"
-        className="bg-transparent text-white grow outline-none"
-        type="text"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
-            mutate({ content: content, title: title })
+            mutate({ postId, content: comment })
           }
         }}
-        disabled={isPosting}
+        disabled={isCommenting}
       />
-      {content !== "" && (
-        <button onClick={() => mutate({ content: content, title: title })}>
+      {comment !== "" && (
+        <button onClick={() => mutate({ postId, content: comment })}>
           Post
         </button>
       )}
-      {isPosting && <LoadingSpinner />}
+      {isCommenting && <LoadingSpinner />}
     </div >
   )
 }

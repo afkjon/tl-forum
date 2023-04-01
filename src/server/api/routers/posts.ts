@@ -53,6 +53,49 @@ export const postsRouter = createTRPCRouter({
       };
     });
   }),
+  get: publicProcedure
+  .input(
+    z.object({
+      id: z.string().min(1).max(280),
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    const post = await ctx.prisma.post.findUnique({
+      where: {
+        id: input.id,
+      },
+    });
+
+    if (!post) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Could not find post for id ${input.id}`,
+      });
+    }
+
+    const users = (
+      await clerkClient.users.getUserList({
+        userId: [post.authorId]
+      })
+    ).map(filterUserforClient);
+
+    const author = users[0];
+
+    if (!author) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Could not find author for post ${post.id}`,
+      });
+    }
+
+    return {
+      post,
+      author: {
+        ...author,
+        username: author.username,
+      }
+    };
+  }),
   getByCategory: publicProcedure
     .input(
       z.object({
