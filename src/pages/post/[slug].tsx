@@ -64,7 +64,6 @@ import superjson from "superjson";
 import { CreateCommentWizard } from "~/components/CreateCommentWizard";
 import { CommentView } from "~/components/commentview";
 
-
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = createProxySSGHelpers({
     router: appRouter,
@@ -77,6 +76,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   if (typeof slug !== "string") throw new Error("Slug is not a string");
 
   await ssg.posts.get.prefetch({ id: slug });
+  await ssg.comments.getCommentsForPostId.prefetch({ postId: slug });
 
   return {
     props: {

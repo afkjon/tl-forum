@@ -9,7 +9,6 @@ import { toast } from "react-hot-toast";
 import { useState } from "react";
 
 import { useUser } from "@clerk/nextjs";
-import type { GetStaticProps } from "next";
 
 dayjs.extend(relativeTime);
 
@@ -19,8 +18,6 @@ export const CommentView = (props: CommentWithUser) => {
   const { user } = useUser();
   const { comment, author } = props;
   const [points, setPoints] = useState(props.comment.karma);
-
-  if (!comment || !author) return null;
 
   const { mutate: vote, isLoading: isVoting } = api.comments.vote.useMutation({
     onSuccess: (c) => {
@@ -99,35 +96,3 @@ export const CommentView = (props: CommentWithUser) => {
     </div>
   );
 }
-
-import { createProxySSGHelpers } from "@trpc/react-query/ssg";
-import { appRouter } from "~/server/api/root";
-import { prisma } from "~/server/db";
-import superjson from "superjson";
-
-export const getServerSideProps: GetStaticProps = async (context) => {
-  const ssg = createProxySSGHelpers({
-    router: appRouter,
-    ctx: { prisma, userId: null },
-    transformer: superjson,
-  });
-  const postId = context.params?.postId;
-
-  if (typeof postId !== "string") throw new Error("postId is not a string");
-
-  await ssg.comments.getCommentsForPostId.prefetch({ postId });
-  return {
-    props: {
-      postId: postId,
-      trpcState: ssg.dehydrate(),
-    },
-  };
-}
-
-export const getStaticPaths = () => {
-  return {
-    paths: [],
-    fallback: "blocking",
-  };
-};
-
