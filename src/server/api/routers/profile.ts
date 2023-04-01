@@ -42,7 +42,7 @@ export const profileRouter = createTRPCRouter({
           code: "NOT_FOUND",
           message: `User not found.`,
         });
-      };
+      }
       
       const posts = await ctx.prisma.post.findMany({
         where: {

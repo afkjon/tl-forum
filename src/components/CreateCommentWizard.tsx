@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { LoadingSpinner } from "~/components/loading";
 
 import { api } from "~/utils/api";
-import { FunctionComponent, useState } from "react";
+import { type FunctionComponent, useState } from "react";
 
 import toast from "react-hot-toast";
 

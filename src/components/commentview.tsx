@@ -1,4 +1,4 @@
-import { api, RouterOutputs } from "~/utils/api";
+import { api, type RouterOutputs } from "~/utils/api";
 
 import dayjs from 'dayjs';
 import Image from 'next/image'
@@ -9,6 +9,7 @@ import { toast } from "react-hot-toast";
 import { useState } from "react";
 
 import { useUser } from "@clerk/nextjs";
+import type { GetStaticProps } from "next";
 
 dayjs.extend(relativeTime);
 
@@ -18,6 +19,8 @@ export const CommentView = (props: CommentWithUser) => {
   const { user } = useUser();
   const { comment, author } = props;
   const [points, setPoints] = useState(props.comment.karma);
+
+  if (!comment || !author) return null;
 
   const { mutate: vote, isLoading: isVoting } = api.comments.vote.useMutation({
     onSuccess: (c) => {
@@ -51,55 +54,80 @@ export const CommentView = (props: CommentWithUser) => {
 
   return (
     <div className="border border-slate-400 p-4 bg-slate-800 w-full flex" key={comment.id}>
-      <Image
-        src={author.profileImageUrl}
-        alt={`@${author.username}'s Profile image`}
-        className="h-16 w-16 rounded-full gap-3"
-        width={56}
-        height={56}
-      />
-      <div className="flex flex-col ml-5">
-        <div className="flex text-slate-100 ga-1">
-          <span>
-            {` @`}
-            <Link
-              className="underline"
-              href={`/${author.username}`}>
-              {`${author.username}`}
-            </Link>
-          </span>
-        </div>
-        <span className="font-thin">{` ${dayjs(
-          comment.createdAt
-        ).fromNow()}`}</span>
-        <span className="mt-3">{comment.content}</span>
-      </div>
-      <div className="block ml-auto text-3xl">
-        <div className="flex m-2">
-          <button
-            className="font-bold"
-            onClick={onDownVoteButton}
-            disabled={isVoting}
-          >-</button>
-          <span className="flex text-red-300 font-bold p-2">{points}</span>
-          <button
-            className="font-bold"
-            onClick={onUpVoteButton}
-            disabled={isVoting}
-          >+</button>
-        </div>
-      </div>
+      {author && author.profileImageUrl && author.username && author.id ? (
+        <>
+          <Image
+            src={author.profileImageUrl}
+            alt={`@${author.username}'s Profile image`}
+            className="h-16 w-16 rounded-full gap-3"
+            width={56}
+            height={56}
+          />
+          <div className="flex flex-col ml-5">
+            <div className="flex text-slate-100 ga-1">
+              <span>
+                {` @`}
+                <Link
+                  className="underline"
+                  href={`/${author.username}`}>
+                  {`${author.username}`}
+                </Link>
+              </span>
+            </div>
+            <span className="font-thin">{` ${dayjs(
+              comment.createdAt
+            ).fromNow()}`}</span>
+            <span className="mt-3">{comment.content}</span>
+          </div>
+          <div className="block ml-auto text-3xl">
+            <div className="flex m-2">
+              <button
+                className="font-bold"
+                onClick={onDownVoteButton}
+                disabled={isVoting}
+              >-</button>
+              <span className="flex text-red-300 font-bold p-2">{points}</span>
+              <button
+                className="font-bold"
+                onClick={onUpVoteButton}
+                disabled={isVoting}
+              >+</button>
+            </div>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }
 
-export const getServerSideProps = async (ctx: any) => {
-  const { postId } = ctx.query;
-  const { data } = await ctx.comments.getCommentsForPostId(postId).prefetch();
+import { createProxySSGHelpers } from "@trpc/react-query/ssg";
+import { appRouter } from "~/server/api/root";
+import { prisma } from "~/server/db";
+import superjson from "superjson";
+
+export const getServerSideProps: GetStaticProps = async (context) => {
+  const ssg = createProxySSGHelpers({
+    router: appRouter,
+    ctx: { prisma, userId: null },
+    transformer: superjson,
+  });
+  const postId = context.params?.postId;
+
+  if (typeof postId !== "string") throw new Error("postId is not a string");
+
+  await ssg.comments.getCommentsForPostId.prefetch({ postId });
   return {
     props: {
-      comments: data,
+      postId: postId,
+      trpcState: ssg.dehydrate(),
     },
   };
 }
+
+export const getStaticPaths = () => {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
+};
 

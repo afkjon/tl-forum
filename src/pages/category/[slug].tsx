@@ -1,6 +1,6 @@
-import { GetStaticProps, type NextPage } from "next";
+import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 
 import { CreatePostWizard } from "~/components/CreatePostWizard";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
@@ -31,7 +31,6 @@ const CategoryPage: NextPage<{ category: string }> = ({ category }) => {
               </div>
             )}
             {isSignedIn && <CreatePostWizard />}
-            {isSignedIn && <SignOutButton />}
           </div>
           <Feed category={category}></Feed>
         </div>
@@ -61,7 +60,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   };
 }
 
-export const getStaticPaths = async () => {
+export const getStaticPaths = () => {
   return {
     paths: [],
     fallback: "blocking",

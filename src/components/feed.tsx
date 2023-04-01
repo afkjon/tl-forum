@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import type { FunctionComponent } from "react";
 import { api } from "~/utils/api";
 import { ErrorPage } from "./error-page";
 import { LoadingPage } from "./loading-page";

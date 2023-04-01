@@ -1,9 +1,9 @@
 import { LoadingSpinner } from "./loading";
 
-export  const LoadingPage = () => {
+export const LoadingPage = () => {
   return (
-    <div className="absolute top-0 right-0 flex h-screen w-screen justify-center align-middle">
-      <LoadingSpinner />
+    <div className="flex mx-auto justify-center p-10">
+      <LoadingSpinner size={150} />
     </div>
   );
 }

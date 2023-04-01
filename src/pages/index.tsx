@@ -1,14 +1,9 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { SignInButton, useUser } from "@clerk/nextjs";
 import { Feed } from "~/components/feed";
 
 const Home: NextPage = () => {
   const postFeedCategory = "Unorganized";
-
-  const { isLoaded: userLoaded, isSignedIn } = useUser();
-
-  if (!userLoaded) return <div />;
 
   return (
     <>

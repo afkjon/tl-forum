@@ -1,4 +1,4 @@
-import { GetStaticProps, type NextPage } from "next";
+import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 
@@ -7,10 +7,10 @@ import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import superjson from "superjson";
-import { FunctionComponent } from "react";
+import type { FunctionComponent } from "react";
 import { api } from "~/utils/api";
-import { LoadingPage } from "../[slug]";
 import { PostView } from "~/components/postview";
+import { LoadingPage } from "~/components/loading-page";
 
 type SearchResultsProps = {
   query: string;
@@ -21,9 +21,7 @@ export const SearchResults: FunctionComponent<SearchResultsProps> = ({ query }: 
 
   if (postsLoading)
     return (
-      <div className="flex grow mt-48">
-        <LoadingPage />
-      </div>
+      <LoadingPage />
     );
 
   if (!data) return <div>No Results</div>;
@@ -89,7 +87,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   };
 }
 
-export const getStaticPaths = async () => {
+export const getStaticPaths = () => {
   return {
     paths: [],
     fallback: "blocking",

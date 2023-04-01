@@ -263,7 +263,7 @@ export const postsRouter = createTRPCRouter({
           },
         });
 
-        const vote = await ctx.prisma.postVote.update({
+        await ctx.prisma.postVote.update({
           where: {
             id: userVote.id,
           },
@@ -286,7 +286,7 @@ export const postsRouter = createTRPCRouter({
           },
         });
 
-        const vote = await ctx.prisma.postVote.create({
+        await ctx.prisma.postVote.create({
           data: {
             postId: input.postId,
             userId: input.userId,
