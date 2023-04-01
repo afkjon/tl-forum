@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const router = useRouter();
-  const { data } = api.profile.getUserByUsername.useQuery({
+  const { data: userData } = api.profile.getUserByUsername.useQuery({
     username,
   });
 
@@ -14,15 +14,17 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     username,
   });
 
-  if (!data || !posts)
+  if (!userData?.username) {
     router.push("/404", undefined, { shallow: true });
+    return null;
+  }
 
   return (
     <>
-      {data.username ? (
+      {userData?.username && userData?.profileImageUrl ? (
         <>
           <Head>
-            <title>{data.username}</title>
+            <title>{userData.username}</title>
             <link rel="icon" href="/favicon.ico" />
           </Head>
           <main className="flex min-h-screen justify-center bg-gradient-to-b from-[#1c0433] to-[#15162c]">
@@ -30,15 +32,15 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
               <div className="grid">
                 <Image
                   className="rounded-full m-4 border-slate-400 border-1"
-                  alt={`${data.username}'s profile picture`}
-                  src={data.profileImageUrl}
+                  alt={`${userData.username}'s profile picture`}
+                  src={userData.profileImageUrl}
                   width={100}
                   height={100}
                 />
               </div>
               <div className="flex flex-col p-5">
-                <div className="font-bold text-lg">{data.username}</div>
-                <div className="text-md text-slate-300">@{data.username}</div>
+                <div className="font-bold text-lg">{userData.username}</div>
+                <div className="text-md text-slate-300">@{userData.username}</div>
                 <p className="mt-4">
                   Lorep ipsum dolor sit amet, consectetur adipiscing elit. Sed
                   tincidunt, nisl nec ultricies lacinia, nisl nisl aliquam nisl, nec
@@ -48,9 +50,11 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
               </div>
 
               <div className="flex flex-col">
-                {posts.map((fullPost) => (
-                  <PostView {...fullPost} key={fullPost.post.id} />
-                ))}
+                {(!posts || posts.length === 0) ?
+                  posts?.map((fullPost) => (
+                    <PostView {...fullPost} key={fullPost.post.id} />
+                  ))
+                  : <div>User has no posts yet!</div>}
               </div>
             </div>
           </main>
