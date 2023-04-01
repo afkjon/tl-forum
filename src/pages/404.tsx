@@ -1,7 +1,8 @@
+import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 
-export const Custom404 = () => {
+export const Custom404 : NextPage = () => {
   return (
     <>
       <Head>
