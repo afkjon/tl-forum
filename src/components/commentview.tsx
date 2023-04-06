@@ -37,14 +37,20 @@ export const CommentView = (props: CommentWithUser) => {
   });
 
   const onUpVoteButton = () => {
-    if (!user) return;
+    if (!user) {
+      toast.error("You must be logged in to vote!");
+      return;
+    }
     if (user?.id === author.id) return toast.error("You can't vote on your own comment!");
 
     vote({ userId: user?.id, commentId: comment.id, increment: 1 })
   }
 
   const onDownVoteButton = () => {
-    if (!user) return;
+    if (!user) {
+      toast.error("You must be logged in to vote!");
+      return;
+    }
     if (user?.id === author.id) return toast.error("You can't vote on your own comment!");
     vote({ userId: user?.id, commentId: comment.id, increment: -1 })
   }

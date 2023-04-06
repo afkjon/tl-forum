@@ -36,12 +36,18 @@ export const PostView = (props: PostWithUser) => {
   });
 
   const onUpVoteButton = () => {
-    if (!user) return;
+    if (!user) {
+      toast.error("You must be logged in to vote!");
+      return;
+    };
     vote({ userId: user?.id, postId: post.id, increment: 1 })
   }
 
   const onDownVoteButton = () => {
-    if (!user) return;
+    if (!user) {
+      toast.error("You must be logged in to vote!");
+      return;
+    }
     vote({ userId: user?.id, postId: post.id, increment: -1 })
   }
 
