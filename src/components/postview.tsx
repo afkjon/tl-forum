@@ -49,28 +49,32 @@ export const PostView = (props: PostWithUser) => {
     <div className="border-b border-slate-400 p-4 bg-slate-800 w-full flex" key={post.id}>
       {author && author.profileImageUrl && author.username && author.id ? (
         <>
-          <Image
-            src={author.profileImageUrl}
-            alt={`@${author.username}'s Profile image`}
-            className="h-16 w-16 rounded-full gap-3"
-            width={56}
-            height={56}
-          />
+          <Link
+            href={`/${author.username}`}>
+            <Image
+              src={author.profileImageUrl}
+              alt={`@${author.username}'s Profile image`}
+              className="h-16 w-16 rounded-full gap-3"
+              width={56}
+              height={56}
+            />
+          </Link>
           <div className="flex flex-col ml-5">
-            <h2 >{post.title}</h2>
             <Link href={`/post/${post.id}`} className="underline">
-              <span className="font-thin">{` ${dayjs(
-                post.createdAt
-              ).fromNow()}`}</span>
+              <h2 className="bold text-lg">{post.title}</h2>
             </Link>
             <div className="flex text-slate-100 ga-1">
-              <span>
-                Submitted by {` @`}
+              <span className="text-slate-400">
+                {` @`}
                 <Link
-                  className="underline"
                   href={`/${author.username}`}>
                   {`${author.username}`}
                 </Link>
+                <span className="text-sm">
+                  {` ${dayjs(
+                    post.createdAt
+                  ).fromNow()}`}
+                </span>
               </span>
             </div>
             <span className="mt-3">{post.content}</span>

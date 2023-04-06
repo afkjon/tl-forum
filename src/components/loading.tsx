@@ -1,5 +1,4 @@
 export const LoadingSpinner = (props: {size?: number}) => {
-  console.log(props.size)
   return (
 
     <div role="status">

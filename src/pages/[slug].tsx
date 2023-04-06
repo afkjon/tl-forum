@@ -14,8 +14,13 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     username,
   });
 
+
+  const redirect404 = () => {
+    void router.push("/404", undefined, { shallow: true });
+  };
+
   if (!userData?.username) {
-    router.push("/404", undefined, { shallow: true });
+    redirect404();
     return null;
   }
 
@@ -54,7 +59,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                   posts?.map((fullPost) => (
                     <PostView {...fullPost} key={fullPost.post.id} />
                   ))
-                  : <div>User has no posts yet!</div>}
+                  : <div className="mx-auto p-3">User has no posts yet!</div>}
               </div>
             </div>
           </main>

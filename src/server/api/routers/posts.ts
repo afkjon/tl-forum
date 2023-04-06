@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { filterUserforClient } from "~/server/helpers/filterUserForClient";
 
+const defaultCategoryId = "clfvrpvp40000ve405mpzckrd";
 
 import {
   createTRPCRouter,
@@ -214,7 +215,7 @@ export const postsRouter = createTRPCRouter({
           title: input.title,
           authorId,
           content: input.content,
-          categoryId: "clfvrpvp40000ve405mpzckrd",
+          categoryId: defaultCategoryId,
         },
       });
 

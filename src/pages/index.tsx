@@ -1,6 +1,13 @@
-import { type NextPage } from "next";
+
 import Head from "next/head";
+import { type NextPage } from "next";
 import { Feed } from "~/components/feed";
+
+import { createProxySSGHelpers } from "@trpc/react-query/ssg";
+import { appRouter } from "~/server/api/root";
+import { prisma } from "~/server/db";
+import superjson from "superjson";
+
 
 const Home: NextPage = () => {
   const postFeedCategory = "Unorganized";
@@ -8,14 +15,18 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>translation forums</title>
+        <title>define! - Latest Definitions</title>
         <meta name="description" content="I love translation!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex min-h-screen justify-center bg-gradient-to-b from-[#1c0433] to-[#15162c]">
-        <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
-          
-          <Feed category={postFeedCategory} />
+      <div className="min-h-screen bg-gradient-to-b from-[#1c0433] to-[#15162c]">
+        <div className="flex justify-center ">
+          <h1 className="text-4xl text-white font-bold mt-10">Latest Definitions</h1>
+        </div>
+        <div className="flex justify-center">
+          <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
+            <Feed category={postFeedCategory} />
+          </div>
         </div>
       </div>
     </>
@@ -23,11 +34,6 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-import { createProxySSGHelpers } from "@trpc/react-query/ssg";
-import { appRouter } from "~/server/api/root";
-import { prisma } from "~/server/db";
-import superjson from "superjson";
 
 export const getStaticProps = async () => {
   const ssg = createProxySSGHelpers({

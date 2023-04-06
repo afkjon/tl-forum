@@ -10,7 +10,7 @@ import { Feed } from "~/components/feed";
 import NewPostButton from "~/components/newpostbutton";
 
 
-const CategoryPage: NextPage<{ category: string }> = ({ category }) => {
+const SfxPage: NextPage<{ category: string }> = ({ category }) => {
   const { isLoaded: userLoaded } = useUser();
 
   if (!userLoaded) return <div />;
@@ -37,14 +37,14 @@ const CategoryPage: NextPage<{ category: string }> = ({ category }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps: GetStaticProps = async () => {
   const ssg = createProxySSGHelpers({
     router: appRouter,
     ctx: { prisma, userId: null },
     transformer: superjson,
   });
 
-  const slug = context.params?.slug;
+  const slug = "sfx"
 
   if (typeof slug !== "string") throw new Error("Slug is not a string");
 
@@ -58,11 +58,4 @@ export const getStaticProps: GetStaticProps = async (context) => {
   };
 }
 
-export const getStaticPaths = () => {
-  return {
-    paths: [],
-    fallback: "blocking",
-  };
-};
-
-export default CategoryPage;
+export default SfxPage;
