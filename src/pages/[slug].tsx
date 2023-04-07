@@ -3,6 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { api } from "~/utils/api";
 import { useUser } from "@clerk/nextjs";
+import ReactMarkdown from "react-markdown";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -91,11 +92,10 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                     disabled={isUpdating}
                   />
                   :
-                  <p className="mt-4">
-                    {biography}
-                  </p>
+                  <div className="mt-4">
+                    <ReactMarkdown>{biography}</ReactMarkdown>
+                  </div>
                 }
-
 
               </div>
               <div className="flex justify-center">
