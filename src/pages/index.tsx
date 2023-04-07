@@ -7,6 +7,7 @@ import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import superjson from "superjson";
+import NewPostButton from "~/components/newpostbutton";
 
 
 const Home: NextPage = () => {
@@ -22,7 +23,11 @@ const Home: NextPage = () => {
       <div className="flex justify-center">
         <h1 className="text-4xl text-white font-bold mt-10">Latest Definitions</h1>
       </div>
+      <div className="flex justify-center mt-5">
+        <NewPostButton name="Submit a Definition" />
+      </div>
       <div className="flex justify-center">
+      
         <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
           <Feed category={postFeedCategory} />
         </div>

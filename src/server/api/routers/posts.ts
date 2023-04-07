@@ -13,6 +13,7 @@ import {
 
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { isUserAnAdmin } from "~/server/helpers/isUserAnAdmin";
 
 // Rate limiter allows 3 requests per 1 minute
 const rateLimit = new Ratelimit({
@@ -236,6 +237,7 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string().min(1).max(280),
+        aliases: z.string().max(280),
         content: z.string().min(1).max(280),
       })
     )
@@ -255,6 +257,7 @@ export const postsRouter = createTRPCRouter({
         data: {
           title: input.title,
           authorId,
+          aliases: input.aliases,
           content: input.content,
           categoryId: defaultCategoryId,
         },
@@ -338,5 +341,44 @@ export const postsRouter = createTRPCRouter({
 
         return post;
       }
+    }),
+
+  delete: protectedProcedure
+    .input(
+      z.object({
+        postId: z.string().min(1).max(280),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+
+      const userId = ctx.userId;
+
+      if (!isUserAnAdmin(userId)) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to delete posts",
+        });
+      }
+
+      const post = await ctx.prisma.post.findFirst({
+        where: {
+          id: input.postId,
+        },
+      });
+
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
+      }
+
+      await ctx.prisma.post.delete({
+        where: {
+          id: input.postId,
+        },
+      });
+
+      return post;
     }),
 });

@@ -1,8 +1,6 @@
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import { SignOutButton, useUser } from "@clerk/nextjs";
-
-import { CreatePostWizard } from "~/components/CreatePostWizard";
+import { useUser } from "@clerk/nextjs";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
@@ -41,7 +39,7 @@ export const SearchResults: FunctionComponent<SearchResultsProps> = ({ query }: 
 
 
 const SearchPage: NextPage<{ query: string }> = ({ query }) => {
-  const { isLoaded: userLoaded, isSignedIn } = useUser();
+  const { isLoaded: userLoaded } = useUser();
 
   if (!userLoaded) return <div />;
 
@@ -52,12 +50,10 @@ const SearchPage: NextPage<{ query: string }> = ({ query }) => {
         <meta name="description" content="I love translation!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
-        <div className="flex border-b border-slate-400 p-4">
-          {isSignedIn && <CreatePostWizard />}
-          {isSignedIn && <SignOutButton />}
+      <div className="flex justify-center">
+        <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
+          <SearchResults query={query}></SearchResults>
         </div>
-        <SearchResults query={query}></SearchResults>
       </div>
     </>
   );

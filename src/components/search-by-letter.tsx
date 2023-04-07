@@ -16,13 +16,17 @@ const SearchByLetter = () => {
               styles = "text-red-500";
 
             return (
-              <li key={letter}
-                className={styles}
-              >
-                <Link href={`/category/sfx/${letter}`}>
-                  {letter}
-                </Link>
-              </li>
+              <>
+                {letter ?
+                  <li key={letter}
+                    className={styles}
+                  >
+                    <Link href={`/category/sfx/${letter}`}>
+                      {letter}
+                    </Link>
+                  </li>
+                  : null}
+              </>
             )
           })}
           <li>{`>`}</li>
@@ -34,7 +38,7 @@ const SearchByLetter = () => {
           {hiragana ? hiragana.map(h => {
             const romaji = h.at(1);
             let styles = "";
-            if (path.includes(`category/sfx/${romaji}`))
+            if (romaji && path.includes(`category/sfx/${romaji}`))
               styles = "text-red-500";
 
             return (

@@ -7,11 +7,10 @@ import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import superjson from "superjson";
 import { Feed } from "~/components/feed";
-import NewPostButton from "~/components/newpostbutton";
 
 
 const CategoryPage: NextPage<{ category: string }> = ({ category }) => {
-  const { user, isLoaded: userLoaded } = useUser();
+  const { isLoaded: userLoaded } = useUser();
 
   if (!userLoaded) return <div />;
 
@@ -22,14 +21,10 @@ const CategoryPage: NextPage<{ category: string }> = ({ category }) => {
         <meta name="description" content="I love translation!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
-        <div className="mx-auto border-slate-400">
-          <div className="p-3 mx-auto border-b border-slate-400">
-            {user ? <NewPostButton name="New Post" /> : <div></div>
-            }
-          </div>
+      <div className="flex justify-center">
+        <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
+          <Feed category={category}></Feed>
         </div>
-        <Feed category={category}></Feed>
       </div>
     </>
   );

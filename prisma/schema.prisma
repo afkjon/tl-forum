@@ -21,8 +21,9 @@ model Post {
     id         String   @id @default(cuid())
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
-    title      String   @db.VarChar(255)
-    content    String   @db.VarChar(255)
+    title      String   @db.VarChar(280)
+    aliases    String   @default("")
+    content    String   @db.Text
     categoryId String
     category   Category @relation(fields: [categoryId], references: [id])
     karma      Int      @default(1)
@@ -35,7 +36,7 @@ model Comment {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    content   String   @db.VarChar(255)
+    content   String   @db.VarChar(280)
     karma     Int      @default(1)
     authorId  String
     postId    String

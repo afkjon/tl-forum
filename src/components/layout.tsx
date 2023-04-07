@@ -6,7 +6,7 @@ export const PageLayout = (props: PropsWithChildren) => {
     <>
       <Navbar />
       <main>
-        <div className="min-h-screen bg-gradient-to-b from-[#1c0433] to-[#15162c]">
+        <div className="min-h-screen bg-gradient-to-b from-[#fafafa] to-[#f2f2f3] dark:from-[#000000] dark:to-[#15162c]">
           {props.children}
         </div>
       </main>

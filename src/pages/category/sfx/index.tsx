@@ -7,13 +7,10 @@ import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import superjson from "superjson";
 import { Feed } from "~/components/feed";
-import NewPostButton from "~/components/newpostbutton";
 import SearchByLetter from "~/components/search-by-letter";
 
-
-
 const SfxPage: NextPage<{ category: string }> = ({ category }) => {
-  const { user, isLoaded: userLoaded } = useUser();
+  const { isLoaded: userLoaded } = useUser();
 
   if (!userLoaded) return <div />;
 
@@ -30,14 +27,6 @@ const SfxPage: NextPage<{ category: string }> = ({ category }) => {
       <SearchByLetter />
       <div className="flex justify-center">
         <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
-          <div className="mx-auto border-slate-400">
-            {user ?
-              <div className="p-3 mx-auto border-b border-slate-400">
-                <NewPostButton name="New Post" />
-              </div> :
-              <></>
-            }
-          </div>
           <Feed category={category}></Feed>
         </div>
       </div>

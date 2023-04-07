@@ -2,13 +2,13 @@ import type { FunctionComponent } from "react";
 import { api } from "~/utils/api";
 import { ErrorPage } from "./error-page";
 import { LoadingPage } from "./loading-page";
-import { PostView } from "./postview";
+import { AdminPostView } from "./adminpostview";
 
-type FeedProps = {
+type AdminFeedProps = {
   category: string;
 }
 
-export const Feed: FunctionComponent<FeedProps> = ({ category }: FeedProps) => {
+export const AdminFeed: FunctionComponent<AdminFeedProps> = ({ category }: AdminFeedProps) => {
   const { data, isLoading: postsLoading } = api.posts.getByCategory.useQuery({ name: category });
 
   if (postsLoading)
@@ -24,7 +24,7 @@ export const Feed: FunctionComponent<FeedProps> = ({ category }: FeedProps) => {
     <div className="flex flex-col">
       {data.map((fullPost) => (
         <>
-          <PostView {...fullPost} key={fullPost.post.id} />
+          <AdminPostView {...fullPost} key={fullPost.post.id} />
         </>
       ))}
     </div>

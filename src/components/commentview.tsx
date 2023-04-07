@@ -56,7 +56,7 @@ export const CommentView = (props: CommentWithUser) => {
   }
 
   return (
-    <div className="border border-slate-400 p-4 bg-slate-800 w-full flex" key={comment.id}>
+    <div className="border border-slate-400 p-4 bg-[#140614] w-full flex" key={comment.id}>
       {author && author.profileImageUrl && author.username && author.id ? (
         <>
           <Image
