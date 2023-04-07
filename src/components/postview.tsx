@@ -8,6 +8,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 dayjs.extend(relativeTime);
 
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
@@ -83,7 +84,7 @@ export const PostView = (props: PostWithUser) => {
                 </span>
               </span>
             </div>
-            <span className="mt-3">{post.content}</span>
+            <span className="mt-3"><ReactMarkdown>{post.content}</ReactMarkdown></span>
           </div>
           <div className="block ml-auto text-3xl">
             <div className="flex m-2">

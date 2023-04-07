@@ -18,7 +18,7 @@ const SearchByLetter = () => {
             return (
               <>
                 {letter ?
-                  <li key={letter}
+                  <li key={`l-${letter}`}
                     className={styles}
                   >
                     <Link href={`/category/sfx/${letter}`}>
@@ -44,7 +44,7 @@ const SearchByLetter = () => {
             return (
               <>
                 {romaji ?
-                  <li key={romaji}
+                  <li key={`r-${romaji}`}
                     className={styles}
                   >
                     <Link href={`/category/sfx/${romaji}`}>
