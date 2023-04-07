@@ -79,13 +79,12 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                 <div className="text-md text-slate-300">@{userData.username}</div>
 
                 {user && isEditing ?
-                  <input
+                  <textarea
                     className="mt-4 p-4 text-black"
-                    type="text"
                     value={biography}
                     onChange={(e) => setBiography(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
+                      if (e.key === "Enter" && !e.shiftKey) {
                         handleSubmitEdit();
                       }
                     }}
