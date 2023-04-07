@@ -5,6 +5,7 @@ import { filterUserforClient } from "~/server/helpers/filterUserForClient";
 
 import {
   createTRPCRouter,
+  protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 
@@ -78,4 +79,81 @@ export const profileRouter = createTRPCRouter({
         }
       });
     }),
+    getBiographyByUsername: publicProcedure
+    .input(
+      z.object({
+        username: z.string().min(1).max(280),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const [user] = await clerkClient.users.getUserList({
+        username: [input.username],
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `User not found.`,
+        });
+      }
+
+      const content = await ctx.prisma.biography.findUnique({
+        where: {
+          authorId: user.id,
+        },
+      });
+
+      return content;
+    }),
+    editBiography : protectedProcedure
+    .input(
+      z.object({
+        content: z.string().min(1).max(280),
+        username: z.string().min(1).max(280),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: `You must be logged in to edit your biography.`,
+        });
+      }
+      const [user] = await clerkClient.users.getUserList({
+        username: [input.username],
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `User not found.`,
+        });
+      }
+
+      if (user.id !== ctx.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: `You must be logged in to edit your biography.`,
+        });
+      }
+
+      const bio = await ctx.prisma.biography.upsert({
+        where: {
+          authorId: user.id,
+        },
+        update: {
+          content: input.content,
+        },
+        create: {
+          authorId: user.id,
+          content: input.content,
+        },
+        select: {
+          content: true,
+        },
+      });
+
+      return bio;
+    }),
+
 });

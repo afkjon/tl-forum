@@ -17,6 +17,16 @@ model Category {
     posts Post[]
 }
 
+model Biography {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    content   String   @db.Text
+    authorId  String   @unique
+    
+    @@index([authorId])
+}
+
 model Post {
     id         String   @id @default(cuid())
     createdAt  DateTime @default(now())
