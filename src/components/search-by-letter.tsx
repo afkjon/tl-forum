@@ -23,15 +23,20 @@ const SearchByLetter = () => {
       <div className="flex justify-center">
         <ul className="mx-auto flex gap-3 m-2">
           <li>{`<`}</li>
-          {hiragana.map(h => {
+          {hiragana ? hiragana.map(h => {
+            const romaji = h.at(1);
             return (
-              <li key={h[1]}>
-                <Link href={`/category/sfx/${h[1]}`}>
-                  {h[0]}
-                </Link>
-              </li>
+              <>
+                {romaji ?
+                  <li key={romaji}>
+                    <Link href={`/category/sfx/${romaji}`}>
+                      {h.at(0)}
+                    </Link>
+                  </li>
+                  : null}
+              </>
             )
-          })}
+          }) : null}
           <li>{`>`}</li>
         </ul>
       </div>

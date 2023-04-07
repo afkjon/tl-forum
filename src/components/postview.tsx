@@ -39,7 +39,7 @@ export const PostView = (props: PostWithUser) => {
     if (!user) {
       toast.error("You must be logged in to vote!");
       return;
-    };
+    }
     vote({ userId: user?.id, postId: post.id, increment: 1 })
   }
 

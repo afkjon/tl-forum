@@ -22,17 +22,14 @@ const CategoryPage: NextPage<{ category: string }> = ({ category }) => {
         <meta name="description" content="I love translation!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex min-h-screen justify-center bg-gradient-to-b from-[#1c0433] to-[#15162c]">
-
-        <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
-          <div className="mx-auto border-slate-400">
-            <div className="p-3 mx-auto border-b border-slate-400">
-              {user ? <NewPostButton name="New Post" />: <div></div>
-              }
-            </div>
+      <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
+        <div className="mx-auto border-slate-400">
+          <div className="p-3 mx-auto border-b border-slate-400">
+            {user ? <NewPostButton name="New Post" /> : <div></div>
+            }
           </div>
-          <Feed category={category}></Feed>
         </div>
+        <Feed category={category}></Feed>
       </div>
     </>
   );

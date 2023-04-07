@@ -52,15 +52,13 @@ const SearchPage: NextPage<{ query: string }> = ({ query }) => {
         <meta name="description" content="I love translation!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="min-h-screen justify-center bg-gradient-to-b from-[#1c0433] to-[#15162c]">
-        <div className="flex justify-center">
-          <h1 className="text-4xl text-white font-bold mt-10">All Definitions</h1>
-        </div>
-        <SearchByLetter />
-        <div className="flex justify-center">
-          <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">  
-            <SearchResults query={query}></SearchResults>
-          </div>
+      <div className="flex justify-center">
+        <h1 className="text-4xl text-white font-bold mt-10">All Definitions</h1>
+      </div>
+      <SearchByLetter />
+      <div className="flex justify-center">
+        <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
+          <SearchResults query={query}></SearchResults>
         </div>
       </div>
     </>

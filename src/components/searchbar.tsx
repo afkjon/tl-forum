@@ -5,7 +5,7 @@ import { type FunctionComponent, useState } from "react";
 const SearchBar : FunctionComponent<{styles: string}> = ({styles}) => {
   const [input, setInput] = useState("");
   const router = useRouter();
-  const handleSubmit = () => router.push(`/search/${input}`);
+  const handleSubmit = () => void router.push(`/search/${input}`);
   
   return (
     <input

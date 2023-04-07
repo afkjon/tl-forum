@@ -52,15 +52,13 @@ const SearchPage: NextPage<{ query: string }> = ({ query }) => {
         <meta name="description" content="I love translation!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen justify-center bg-gradient-to-b from-[#1c0433] to-[#15162c]">
-        <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
-          <div className="flex border-b border-slate-400 p-4">
-            {isSignedIn && <CreatePostWizard />}
-            {isSignedIn && <SignOutButton />}
-          </div>
-          <SearchResults query={query}></SearchResults>
+      <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
+        <div className="flex border-b border-slate-400 p-4">
+          {isSignedIn && <CreatePostWizard />}
+          {isSignedIn && <SignOutButton />}
         </div>
-      </main>
+        <SearchResults query={query}></SearchResults>
+      </div>
     </>
   );
 };

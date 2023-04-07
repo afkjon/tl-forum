@@ -24,37 +24,35 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             <title>{userData.username}</title>
             <link rel="icon" href="/favicon.ico" />
           </Head>
-          <main className="flex min-h-screen justify-center bg-gradient-to-b from-[#1c0433] to-[#15162c]">
-            <div className="h-full w-full border border-slate-400 md:max-w-2xl border-t-0">
-              <div className="grid">
-                <Image
-                  className="rounded-full m-4 border-slate-400 border-1"
-                  alt={`${userData.username}'s profile picture`}
-                  src={userData.profileImageUrl}
-                  width={100}
-                  height={100}
-                />
-              </div>
-              <div className="flex flex-col p-5">
-                <div className="font-bold text-lg">{userData.username}</div>
-                <div className="text-md text-slate-300">@{userData.username}</div>
-                <p className="mt-4">
-                  Lorep ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  tincidunt, nisl nec ultricies lacinia, nisl nisl aliquam nisl, nec
-                  lacinia nisl nisl sit amet nisl. Sed tincidunt, nisl nec ultricies
-                  lacinia, nisl nisl aliquam nisl, nec lacinia nisl nisl sit amet
-                </p>
-              </div>
-
-              <div className="flex flex-col">
-                {(!posts || posts.length === 0) ?
-                  posts?.map((fullPost) => (
-                    <PostView {...fullPost} key={fullPost.post.id} />
-                  ))
-                  : <div className="mx-auto p-3">User has no posts yet!</div>}
-              </div>
+          <div className="h-full w-full border border-slate-400 md:max-w-2xl border-t-0">
+            <div className="grid">
+              <Image
+                className="rounded-full m-4 border-slate-400 border-1"
+                alt={`${userData.username}'s profile picture`}
+                src={userData.profileImageUrl}
+                width={100}
+                height={100}
+              />
             </div>
-          </main>
+            <div className="flex flex-col p-5">
+              <div className="font-bold text-lg">{userData.username}</div>
+              <div className="text-md text-slate-300">@{userData.username}</div>
+              <p className="mt-4">
+                Lorep ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                tincidunt, nisl nec ultricies lacinia, nisl nisl aliquam nisl, nec
+                lacinia nisl nisl sit amet nisl. Sed tincidunt, nisl nec ultricies
+                lacinia, nisl nisl aliquam nisl, nec lacinia nisl nisl sit amet
+              </p>
+            </div>
+
+            <div className="flex flex-col">
+              {(!posts || posts.length === 0) ?
+                posts?.map((fullPost) => (
+                  <PostView {...fullPost} key={fullPost.post.id} />
+                ))
+                : <div className="mx-auto p-3">User has no posts yet!</div>}
+            </div>
+          </div>
         </>) : null
       }
     </>
