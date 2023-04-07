@@ -1,8 +1,7 @@
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import { SignOutButton, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 
-import { CreatePostWizard } from "~/components/CreatePostWizard";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
@@ -11,13 +10,14 @@ import type { FunctionComponent } from "react";
 import { api } from "~/utils/api";
 import { PostView } from "~/components/postview";
 import { LoadingPage } from "~/components/loading-page";
+import SearchByLetter from "~/components/search-by-letter";
 
 type SearchResultsProps = {
   query: string;
 }
 
 export const SearchResults: FunctionComponent<SearchResultsProps> = ({ query }: SearchResultsProps) => {
-  const { data, isLoading: postsLoading } = api.posts.search.useQuery({ query });
+  const { data, isLoading: postsLoading } = api.posts.findPostsStartingsWith.useQuery({ query });
 
   if (postsLoading)
     return (
@@ -41,26 +41,28 @@ export const SearchResults: FunctionComponent<SearchResultsProps> = ({ query }: 
 
 
 const SearchPage: NextPage<{ query: string }> = ({ query }) => {
-  const { isLoaded: userLoaded, isSignedIn } = useUser();
+  const { isLoaded: userLoaded } = useUser();
 
   if (!userLoaded) return <div />;
 
   return (
     <>
       <Head>
-        <title>translation forums</title>
+        <title>define!</title>
         <meta name="description" content="I love translation!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen justify-center bg-gradient-to-b from-[#1c0433] to-[#15162c]">
-        <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
-          <div className="flex border-b border-slate-400 p-4">
-            {isSignedIn && <CreatePostWizard />}
-            {isSignedIn && <SignOutButton />}
-          </div>
-          <SearchResults query={query}></SearchResults>
+      <div className="min-h-screen justify-center bg-gradient-to-b from-[#1c0433] to-[#15162c]">
+        <div className="flex justify-center">
+          <h1 className="text-4xl text-white font-bold mt-10">All Definitions</h1>
         </div>
-      </main>
+        <SearchByLetter />
+        <div className="flex justify-center">
+          <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">  
+            <SearchResults query={query}></SearchResults>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

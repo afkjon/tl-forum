@@ -20,7 +20,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="min-h-screen bg-gradient-to-b from-[#1c0433] to-[#15162c]">
-        <div className="flex justify-center ">
+        <div className="flex justify-center">
           <h1 className="text-4xl text-white font-bold mt-10">Latest Definitions</h1>
         </div>
         <div className="flex justify-center">

@@ -191,6 +191,47 @@ export const postsRouter = createTRPCRouter({
         }
       });
     }),
+  findPostsStartingsWith: publicProcedure
+    .input(
+      z.object({
+        query: z.string().min(1).max(280),
+      })
+    ).query(async ({ ctx, input }) => {
+      const posts = await ctx.prisma.post.findMany({
+        where: {
+          title: {
+            startsWith: input.query,
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      const users = (
+        await clerkClient.users.getUserList({
+          userId: posts.map((post) => post.authorId),
+          limit: 100,
+        })
+      ).map(filterUserforClient);
+
+      return posts.map((post) => {
+        const author = users.find(user => user.id === post.authorId);
+        if (!author) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Could not find author for post ${post.id}`,
+          });
+        }
+        return {
+          post,
+          author: {
+            ...author,
+            username: author.username,
+          }
+        }
+      });
+    }),
   create: protectedProcedure
     .input(
       z.object({

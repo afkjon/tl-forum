@@ -2,10 +2,8 @@ import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { api } from "~/utils/api";
-import { useRouter } from "next/router";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const router = useRouter();
   const { data: userData } = api.profile.getUserByUsername.useQuery({
     username,
   });
@@ -14,13 +12,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     username,
   });
 
-
-  const redirect404 = () => {
-    void router.push("/404", undefined, { shallow: true });
-  };
-
   if (!userData?.username) {
-    redirect404();
     return null;
   }
 
