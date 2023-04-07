@@ -1,28 +1,38 @@
-# Create T3 App
+# define!
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This is a project that allows users to search for definitions of words. The project is built using the [T3 Stack](https://create.t3.gg/), which includes TypeScript, Tailwind CSS, and tRPC. The live demo can be found [here](https://we-define.vercel.app/).
 
-## What's next? How do I make an app with this?
+## Getting Started
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+To get started with the project, first clone the repository and install the dependencies:
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+```console
+git clone <repo-url>
+cd t3-definition-project
+npm install
+```
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+Next, you'll need to create a .env file in the root directory with the following contents:
 
-## Learn More
+```env
+NEXTAUTH_URL=<your-url>
+NEXT_PUBLIC_API_URL=<your-api-url>
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<your-clerk-publishable-key>
+CLERK_SECRET_KEY=<your-clerk-secret-key>
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+UPSTASH_REDIS_REST_URL=<your-url>
+UPSTASH_REDIS_REST_TOKEN=<your-token>
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+ADMIN_ID=<your-user-id-from-clerk>
+```
 
-## How do I deploy this?
+You can get the values for the environment variables from the [Clerk dashboard](https://dashboard.clerk.dev/) and [Upstash](https://upstash.com/).
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+Finally, run the development server:
+
+```console
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
