@@ -161,6 +161,11 @@ export const postsRouter = createTRPCRouter({
                 contains: input.query,
               },
             },
+            {
+              aliases: {
+                contains: input.query,
+              }
+            }
           ],
         },
         orderBy: {
