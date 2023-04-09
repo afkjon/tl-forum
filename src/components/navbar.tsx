@@ -7,7 +7,7 @@ export const Navbar = () => {
   const { isSignedIn } = useUser();
 
   return (
-    <div className="flex bg-slate-700 shadow-md z-50 w-full p-2 text-lg">
+    <div className="flex bg-[#3d394e] shadow-md z-50 w-full p-2 text-lg">
       <div className="max-w-4xl container flex mx-auto">
         <Link href="/">
           <Image
