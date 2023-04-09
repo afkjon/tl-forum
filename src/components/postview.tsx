@@ -18,7 +18,16 @@ export const PostView = (props: PostWithUser) => {
   const [points, setPoints] = useState(props.post.karma);
   const { post, author } = props;
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(post.title);
+  const [aliases, setAliases] = useState(post.aliases);
+  const [content, setContent] = useState(post.content);
+  const [isDeleted, setIsDeleted] = useState(false);
+
   if (!post || !author) return null;
+  
+
+  const utils = api.useContext();
 
   const { mutate: vote, isLoading: isVoting } = api.posts.vote.useMutation({
     onSuccess: (p) => {
@@ -32,6 +41,44 @@ export const PostView = (props: PostWithUser) => {
         toast.error(errorMessage[0]);
       } else {
         toast.error("Failed to upvote! Please try again later.");
+      }
+    },
+  });
+
+  const { mutate: edit, isLoading: isUpdating } = api.posts.edit.useMutation({
+    onSuccess: (p) => {
+      if (!p) return;
+      toast.success("Edited!");
+      setTitle(p.title);
+      setAliases(p.aliases);
+      setContent(p.content);
+      void utils.posts.get.invalidate({ id: p.id });
+    },
+    onError: (err) => {
+      const errorMessage = err.data?.zodError?.fieldErrors.content;
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+      } else {
+        toast.error("Failed to edit! Please try again later.");
+      }
+    },
+  });
+
+  const { mutate: del, isLoading: isDeleting } = api.posts.delete.useMutation({
+    onSuccess: (p) => {
+      if (!p) return;
+      toast.success("Deleted!");
+      setTitle("");
+      setAliases("");
+      setContent("(Post Deleted)");
+      setIsDeleted(true);
+    },
+    onError: (err) => {
+      const errorMessage = err.data?.zodError?.fieldErrors.content;
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+      } else {
+        toast.error("Failed to delete! Please try again later.");
       }
     },
   });
@@ -52,6 +99,8 @@ export const PostView = (props: PostWithUser) => {
     vote({ userId: user?.id, postId: post.id, increment: -1 })
   }
 
+  if (isDeleted) return null;
+
   return (
     <div className="border-b border-slate-400 p-4 bg-slate-800 w-full flex" key={post.id}>
       {author && author.profileImageUrl && author.username && author.id ? (
@@ -67,9 +116,23 @@ export const PostView = (props: PostWithUser) => {
             />
           </Link>
           <div className="flex flex-col ml-5">
-            <Link href={`/post/${post.id}`} className="underline">
-              <h2 className="bold text-lg">{post.title}</h2>
-            </Link>
+            {isEditing ?
+              <input
+                type="text"
+                className="bg-slate-700 text-slate-100 p-1 m-1 rounded-sm w-full"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              /> :
+              <Link href={`/post/${post.id}`} className="underline">
+                <h2 className="bold text-lg">{post.title}</h2>
+              </Link>}
+            {isEditing ?
+              <input type="text"
+                placeholder="aliases"
+                className="bg-slate-700 text-slate-100 p-1 m-1 rounded-sm w-full"
+                value={aliases} onChange={(e) => setAliases(e.target.value)}
+              /> :
+              <span className="text-slate-300">{post.aliases}</span>}
             <div className="flex text-slate-100 ga-1">
               <span className="text-slate-400">
                 {` @`}
@@ -84,7 +147,15 @@ export const PostView = (props: PostWithUser) => {
                 </span>
               </span>
             </div>
-            <span className="mt-3"><ReactMarkdown>{post.content}</ReactMarkdown></span>
+            {isEditing ?
+              <textarea
+                className="bg-slate-700 text-slate-100 p-1 m-1 rounded-sm w-full"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+              :
+              <span className="mt-3"><ReactMarkdown>{post.content}</ReactMarkdown></span>
+            }
           </div>
           <div className="block ml-auto text-3xl">
             <div className="flex m-2">
@@ -100,6 +171,40 @@ export const PostView = (props: PostWithUser) => {
                 disabled={isVoting}
               >+</button>
             </div>
+            {post.authorId === user?.id ?
+              <div className="flex gap-2">
+                {isEditing ?
+                  <span className="text-sm underline hover:cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!isUpdating) {
+                        setIsEditing(!isEditing);
+                        edit({ postId: post.id, title, aliases, content })
+                      }
+                    }}>
+                    Save
+                  </span>
+                  :
+                  <span className="text-sm underline hover:cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!isUpdating)
+                        setIsEditing(!isEditing);
+                    }}>
+                    Edit
+                  </span>
+                }
+                <span className="text-sm underline hover:cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (!isDeleting)
+                      del({ postId: post.id })
+                  }}
+                >
+                  Delete
+                </span>
+              </div>
+              : null}
           </div>
         </>
       ) : null}

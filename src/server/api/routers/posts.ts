@@ -347,7 +347,58 @@ export const postsRouter = createTRPCRouter({
         return post;
       }
     }),
+  edit: protectedProcedure
+    .input(
+      z.object({
+        postId: z.string().min(1).max(280),
+        title: z.string().min(1).max(280),
+        aliases: z.string().max(280),
+        content: z.string().min(1).max(280),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findFirst({
+        where: {
+          id: input.postId,
+        },
+      });
 
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
+      }
+
+      const userId = ctx.userId;
+      if (!isUserAnAdmin(userId) || post.authorId !== userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to edit this post",
+        });
+      }
+
+      const { success } = await rateLimit.limit(userId);
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "You are posting too fast",
+        });
+      }
+
+      const updatedPost = await ctx.prisma.post.update({
+        where: {
+          id: input.postId,
+        },
+        data: {
+          title: input.title,
+          aliases: input.aliases,
+          content: input.content,
+        },
+      });
+      
+      return updatedPost;
+    }),
   delete: protectedProcedure
     .input(
       z.object({
