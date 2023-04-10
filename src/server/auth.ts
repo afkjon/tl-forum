@@ -5,6 +5,7 @@ import {
   type DefaultSession,
 } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+
 import { prisma } from "~/server/db";
 
 /**
@@ -21,8 +22,8 @@ declare module "next-auth" {
       // role: UserRole;
     } & DefaultSession["user"];
   }
+}
 
-  
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
