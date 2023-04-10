@@ -65,6 +65,14 @@ export const AdminPostView = (props: PostWithUser) => {
     vote({ userId: user?.id, postId: post.id, increment: -1 })
   }
 
+  const onDeleteButton = () => {
+    if (!user) {
+      toast.error("You must be logged in to delete posts!");
+      return;
+    }
+    deletePost({ postId: post.id })
+  }
+
   return (
     <div className="border-b border-slate-400 p-4 bg-slate-800 w-full flex" key={post.id}>
       {author && author.profileImageUrl && author.username && author.id ? (
@@ -116,9 +124,7 @@ export const AdminPostView = (props: PostWithUser) => {
             <div>
               <button
                 className="bg-red-500 text-white text-lg p-2 px-4 rounded-md"
-                onClick={() => {
-                  deletePost({ postId: post.id });
-                }}
+                onClick={onDeleteButton}
                 disabled={isDeleting}
               >
                 Delete

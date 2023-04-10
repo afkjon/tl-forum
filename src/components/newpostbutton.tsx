@@ -8,6 +8,7 @@ type NewPostProps = {
 const NewPostButton = (props : NewPostProps) => {
 
   const router = useRouter();
+  
   const handleNewPost = () => {
     void router.push('/post/new');
   }

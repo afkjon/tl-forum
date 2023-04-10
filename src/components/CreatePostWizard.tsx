@@ -35,6 +35,28 @@ export const CreatePostWizard = () => {
 
   if (!user) return null;
 
+  const handleSubmit = () => {
+    mutate({ content, aliases, title })
+  }
+
+  const handleKeyEvents = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter') {
+      mutate({ content, aliases, title })
+    }
+  }
+
+  const handleTitleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  }
+
+  const handleAliasesChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setAliases(e.target.value);
+  }
+
+  const handleContentChange = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+  }
+
   return (
     <>
       <div className="mx-auto border-b border-slate-400">
@@ -50,7 +72,7 @@ export const CreatePostWizard = () => {
             className="m-2 bg-transparent text-white grow outline-none"
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={handleTitleChange}
             disabled={isPosting}
           />
         </div>
@@ -60,7 +82,7 @@ export const CreatePostWizard = () => {
             className="m-4 p-4 bg-transparent text-white grow outline-none"
             type="text"
             value={aliases}
-            onChange={(e) => setAliases(e.target.value)}
+            onChange={handleAliasesChange}
             disabled={isPosting}
           />
         </div>
@@ -69,12 +91,8 @@ export const CreatePostWizard = () => {
             placeholder="Definition"
             className="bg-transparent text-white grow outline-none m-4 p-4"
             value={content}
-            onChange={(e) => setContent(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                mutate({ content, aliases, title })
-              }
-            }}
+            onChange={handleContentChange}
+            onKeyDown={handleKeyEvents}
             disabled={isPosting}
           />
         </div>
@@ -82,7 +100,7 @@ export const CreatePostWizard = () => {
           {content !== "" && (
             <button
               className="mx-auto p-3 bg-blue-400 m-3 rounded"
-              onClick={() => mutate({ content, aliases, title })}>
+              onClick={handleSubmit}>
               Create Post
             </button>
           )}

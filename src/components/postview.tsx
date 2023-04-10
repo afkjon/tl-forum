@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import relativeTime from "dayjs/plugin/relativeTime";
 import { toast } from "react-hot-toast";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 dayjs.extend(relativeTime);
@@ -45,7 +45,7 @@ export const PostView = (props: PostWithUser) => {
     },
   });
 
-  const { mutate: edit, isLoading: isUpdating } = api.posts.edit.useMutation({
+  const { mutate: edit } = api.posts.edit.useMutation({
     onSuccess: (p) => {
       if (!p) return;
       toast.success("Edited!");
@@ -64,7 +64,7 @@ export const PostView = (props: PostWithUser) => {
     },
   });
 
-  const { mutate: del, isLoading: isDeleting } = api.posts.delete.useMutation({
+  const { mutate: del } = api.posts.delete.useMutation({
     onSuccess: (p) => {
       if (!p) return;
       toast.success("Deleted!");
@@ -99,6 +99,43 @@ export const PostView = (props: PostWithUser) => {
     vote({ userId: user?.id, postId: post.id, increment: -1 })
   }
 
+  const handleEditButton = () => {
+    if (!user) {
+      toast.error("You must be logged in to edit!");
+      return;
+    }
+    setIsEditing(true);
+  }
+
+  const handleSaveButton = () => {
+    if (!user) {
+      toast.error("You must be logged in to edit!");
+      return;
+    }
+    edit({ postId: post.id, title, aliases, content })
+    setIsEditing(false);
+  }
+
+  const handleDeleteButton = () => {
+    if (!user) {
+      toast.error("You must be logged in to delete!");
+      return;
+    }
+    del({ postId: post.id })
+  }
+
+  const handleTitleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  }
+
+  const handleAliasesChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setAliases(e.target.value);
+  }
+
+  const handleContentChange = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+  }
+
   if (isDeleted) return null;
 
   return (
@@ -121,7 +158,7 @@ export const PostView = (props: PostWithUser) => {
                 type="text"
                 className="bg-slate-700 text-slate-100 p-1 m-1 rounded-sm w-full"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={handleTitleChange}
               /> :
               <Link href={`/post/${post.id}`} className="underline">
                 <h2 className="bold text-lg">{post.title}</h2>
@@ -130,7 +167,7 @@ export const PostView = (props: PostWithUser) => {
               <input type="text"
                 placeholder="aliases"
                 className="bg-slate-700 text-slate-100 p-1 m-1 rounded-sm w-full"
-                value={aliases} onChange={(e) => setAliases(e.target.value)}
+                value={aliases} onChange={handleAliasesChange}
               /> :
               <span className="text-slate-300">{post.aliases}</span>}
             <div className="flex text-slate-100 ga-1">
@@ -151,7 +188,7 @@ export const PostView = (props: PostWithUser) => {
               <textarea
                 className="bg-slate-700 text-slate-100 p-1 m-1 rounded-sm w-full"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={handleContentChange}
               />
               :
               <span className="mt-3"><ReactMarkdown>{post.content}</ReactMarkdown></span>
@@ -177,31 +214,17 @@ export const PostView = (props: PostWithUser) => {
               <div className="flex gap-2">
                 {isEditing ?
                   <span className="text-sm underline hover:cursor-pointer"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (!isUpdating) {
-                        setIsEditing(!isEditing);
-                        edit({ postId: post.id, title, aliases, content })
-                      }
-                    }}>
+                    onClick={handleSaveButton}>
                     Save
                   </span>
                   :
                   <span className="text-sm underline hover:cursor-pointer"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (!isUpdating)
-                        setIsEditing(!isEditing);
-                    }}>
+                    onClick={handleEditButton}>
                     Edit
                   </span>
                 }
                 <span className="text-sm underline hover:cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!isDeleting)
-                      del({ postId: post.id })
-                  }}
+                  onClick={handleDeleteButton}
                 >
                   Delete
                 </span>

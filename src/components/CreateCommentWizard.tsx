@@ -35,6 +35,20 @@ export const CreateCommentWizard: FunctionComponent<CreateCommentWizardProps> = 
 
   if (!user) return null;
 
+  const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setComment(e.target.value);
+  }
+
+  const handleKeyEvents = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      mutate({ postId, content: comment })
+    }
+  }
+
+  const handlePostComment = () => {
+    mutate({ postId, content: comment })
+  }
+
   return (
     <div className="flex w-full gap-3 p-3 border-slate-400 border-b-2">
       <Image src={user.profileImageUrl}
@@ -48,16 +62,12 @@ export const CreateCommentWizard: FunctionComponent<CreateCommentWizardProps> = 
         className="bg-transparent text-white grow outline-none"
         type="text"
         value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            mutate({ postId, content: comment })
-          }
-        }}
+        onChange={handleCommentChange}
+        onKeyDown={handleKeyEvents}
         disabled={isCommenting}
       />
       {comment !== "" && (
-        <button onClick={() => mutate({ postId, content: comment })}>
+        <button onClick={handlePostComment}>
           Post
         </button>
       )}

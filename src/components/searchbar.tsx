@@ -6,12 +6,16 @@ const SearchBar : FunctionComponent<{styles: string}> = ({styles}) => {
   const [input, setInput] = useState("");
   const router = useRouter();
   const handleSubmit = () => void router.push(`/search/${input}`);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  }
   
   return (
     <input
       className={styles}
       value={input}
-      onChange={(e) => setInput(e.target.value)}
+      onChange={handleInputChange}
       onKeyDown={handleSubmit}
       placeholder="Search"
       type="text"
