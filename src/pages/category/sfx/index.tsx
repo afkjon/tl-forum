@@ -7,7 +7,6 @@ import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import superjson from "superjson";
 import { Feed } from "~/components/feed";
-import SearchByLetter from "~/components/search-by-letter";
 
 const SfxPage: NextPage<{ category: string }> = ({ category }) => {
   const { isLoaded: userLoaded } = useUser();
@@ -24,7 +23,6 @@ const SfxPage: NextPage<{ category: string }> = ({ category }) => {
       <div className="flex justify-center">
         <h1 className="text-4xl text-white font-bold mt-10">All Definitions</h1>
       </div>
-      <SearchByLetter />
       <div className="flex justify-center">
         <div className="h-full w-full border border-slate-400 md:max-w-2xl mt-20">
           <Feed category={category}></Feed>

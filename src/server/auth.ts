@@ -4,9 +4,7 @@ import {
   type NextAuthOptions,
   type DefaultSession,
 } from "next-auth";
-//import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-//import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
 /**
@@ -24,12 +22,7 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
-}
-
+  
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
