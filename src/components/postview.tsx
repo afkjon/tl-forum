@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import relativeTime from "dayjs/plugin/relativeTime";
 import { toast } from "react-hot-toast";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 dayjs.extend(relativeTime);
