@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from "react";
 import { Navbar } from "./navbar";
+import Footer from "./footer";
 
 export const PageLayout = (props: PropsWithChildren) => {
   return (
@@ -10,6 +11,7 @@ export const PageLayout = (props: PropsWithChildren) => {
           {props.children}
         </div>
       </main>
+      <Footer />
     </>
   );
 }

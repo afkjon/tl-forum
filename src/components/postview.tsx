@@ -157,6 +157,7 @@ export const PostView = (props: PostWithUser) => {
               <span className="mt-3"><ReactMarkdown>{post.content}</ReactMarkdown></span>
             }
           </div>
+          {/* Voting Buttons */}
           <div className="block ml-auto text-3xl">
             <div className="flex m-2">
               <button
@@ -171,6 +172,7 @@ export const PostView = (props: PostWithUser) => {
                 disabled={isVoting}
               >+</button>
             </div>
+            {/* Delete and Edit Buttons */}
             {post.authorId === user?.id ?
               <div className="flex gap-2">
                 {isEditing ?
